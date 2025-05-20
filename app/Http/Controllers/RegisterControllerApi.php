@@ -31,6 +31,7 @@ class RegisterControllerApi extends Controller
 
         return RegisterResponse::success('Register Succes', $user);
 
+    
 
     }
 }
