@@ -11,7 +11,6 @@ class ChatbotIntent extends Model
 
     protected $fillable = [
         'name',
-        'is_active',
         'description',
     ];
 
@@ -24,7 +23,7 @@ class ChatbotIntent extends Model
     {
         return $this->hasMany(ChatbotQuestion::class);
     }
-    
+
     public function responses()
     {
         return $this->hasMany(ChatbotResponse::class);

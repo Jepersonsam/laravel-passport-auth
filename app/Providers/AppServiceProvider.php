@@ -21,7 +21,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-       // Passport::ignoreRoutes();
+        // Passport::ignoreRoutes();
     }
 
     /**
@@ -36,14 +36,11 @@ class AppServiceProvider extends ServiceProvider
         Passport::useClientModel(Client::class);
         Passport::useDeviceCodeModel(DeviceCode::class);
 
-         Scramble::configure()
-        ->withDocumentTransformers(function (OpenApi $openApi) {
-            $openApi->secure(
-                SecurityScheme::http('bearer')
-            );
-        });
-        
+        Scramble::configure()
+            ->withDocumentTransformers(function (OpenApi $openApi) {
+                $openApi->secure(
+                    SecurityScheme::http('bearer')
+                );
+            });
     }
 }
-
-    

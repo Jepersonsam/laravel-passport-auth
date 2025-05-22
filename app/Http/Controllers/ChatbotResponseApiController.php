@@ -2,54 +2,74 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\ChatbotResponse;
+use App\Http\Requests\StoreResponseRequest;
+use App\Http\Requests\UpdateResponseRequest;
+use App\Http\Resources\ChatbotResponseResource;
+use Illuminate\Http\JsonResponse;
 
 class ChatbotResponseApiController extends Controller
 {
-     //RESPONSES
-    // GET response by intent_id
-    public function getResponse($intent_id)
+    /**
+     * Get Response By Intent ID
+     */
+    public function getResponse(int $intent_id): JsonResponse
     {
-        $response = ChatbotResponse::where('intent_id', $intent_id)->first();
-        return response()->json($response);
+        $response = ChatbotResponse::where('intent_id', $intent_id)->get();
+        return response()->json([
+            'success' => true,
+            'message' => 'Response retrieved successfully',
+            'data' => ChatbotResponseResource::collection($response),
+        ]);
     }
-    //Post Response
-    public function createResponse(Request $request)
-{
-    $data = $request->validate([
-        'intent_id' => 'required|exists:chatbot_intents,id',
-        'response_text' => 'required|string',
-        'value' => 'nullable|string',
-        'params' => 'nullable|array',
-    ]);
-    $data['params'] = json_encode($data['params']);
-    $response = ChatbotResponse::create($data);
-    return response()->json($response, 201);
-}
-    // PUT response
-    public function updateResponse(Request $request, $id)
-{
-    $response = ChatbotResponse::find($id);
-    if (!$response) return response()->json(['message' => 'Response not found'], 404);
 
-    $data = $request->validate([
-        'intent_id' => 'required|exists:chatbot_intents,id',
-        'response_text' => 'required|string',
-        'value' => 'nullable|string',
-        'params' => 'nullable|array',
-    ]);
-    $data['params'] = json_encode($data['params']);
-    $response->update($data);
-    return response()->json($response);
-}
-    // DELETE response
-    public function deleteResponse($id)
-{
-    $response = ChatbotResponse::find($id);
-    if (!$response) return response()->json(['message' => 'Response not found'], 404);
-    $response->delete();
-    return response()->json(['message' => 'Response deleted']);
-}
+    /**
+     * Create Response
+     */
+    public function createResponse(StoreResponseRequest $request): JsonResponse
+    {
+        $response = ChatbotResponse::create($request->validated());
+        return response()->json([
+            'success' => true,
+            'message' => 'Response created successfully',
+            'data' => new ChatbotResponseResource($response),
+        ], 201);
+    }
 
+    /**
+     * Update Response
+     */
+    public function updateResponse(UpdateResponseRequest $request, int $id): JsonResponse
+    {
+        $response = ChatbotResponse::find($id);
+
+        if (!$response) {
+            return response()->json(['message' => 'Response not found'], 404);
+        }
+
+        $response->update($request->validated());
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Response updated successfully',
+            'data' => new ChatbotResponseResource($response),
+        ]);
+    }
+
+    /**
+     * Delete Response
+     */
+    public function deleteResponse(int $id): JsonResponse
+    {
+        $response = ChatbotResponse::findOrFail($id);
+        $response->delete();
+
+        return response()->json([
+            'success' => true,
+            'error' => null,
+            'status' => 200,
+            'data' => null,
+            'message' => 'Response deleted successfully',
+        ]);
+    }
 }

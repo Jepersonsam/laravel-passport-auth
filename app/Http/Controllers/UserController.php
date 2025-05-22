@@ -12,11 +12,10 @@ class UserController extends Controller
      * @param  mixed $request
      * @return void
      */
- public function getUser(Request $request)
- {
+    public function getUser(Request $request)
+    {
 
-     // Return the user as a JSON response
-     return response()->json($request->user());
- }
- 
+        // Return the user as a JSON response
+        return response()->json($request->user());
+    }
 }

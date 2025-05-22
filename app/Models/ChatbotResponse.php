@@ -18,8 +18,9 @@ class ChatbotResponse extends Model
     ];
 
     protected $casts = [
-        'params' => 'array',
+        'params' => 'array', // Langsung definisikan sebagai 'array'
     ];
+
     public function intent()
     {
         return $this->belongsTo(ChatbotIntent::class);
