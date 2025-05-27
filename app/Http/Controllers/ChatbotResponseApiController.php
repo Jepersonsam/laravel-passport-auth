@@ -22,6 +22,11 @@ class ChatbotResponseApiController extends Controller
             'data' => ChatbotResponseResource::collection($response),
         ]);
     }
+     public function index()
+    {
+        return ChatbotResponse::with('intent')->paginate(50);
+        
+    }
 
     /**
      * Create Response

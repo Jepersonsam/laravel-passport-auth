@@ -33,6 +33,12 @@ class ChatbotQuestionApiController extends Controller
         ]);
     }
 
+    public function index()
+    {
+        return ChatbotQuestion::with('intent')->paginate(50);
+        
+    }
+
     /**
      * Post Question
      *
@@ -51,10 +57,6 @@ class ChatbotQuestionApiController extends Controller
         ], 201);
     }
 
-    public function index()
-    {
-        return ChatbotQuestion::with('intent')->paginate(10);
-    }
 
     /**
      * Post Question Bulk

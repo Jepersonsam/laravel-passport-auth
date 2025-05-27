@@ -26,7 +26,7 @@ class RegisterControllerApi extends Controller
         $user = User::create([
             'name'     => $request->name,
             'email'    => $request->email,
-            'password' => Hash::make($request->password)
+            'password' => Hash::make($request->password),
         ]);
 
         return RegisterResponse::success('Register Succes', $user);

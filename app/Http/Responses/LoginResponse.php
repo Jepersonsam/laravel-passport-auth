@@ -10,7 +10,9 @@ class LoginResponse
             'success' => true,
             'message' => 'Login Success!',
             'data'    => $user,
-            'token'   => $user->createToken('authToken')->accessToken
+            'token'   => $user->createToken('authToken')->accessToken,
+            'roles' => $user->getRoleNames(), // 👈 penting
+            'permissions' => $user->getAllPermissions()->pluck('name'), // 👈 penting
         ]);
     }
 

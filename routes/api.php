@@ -11,6 +11,8 @@ use App\Http\Controllers\LoginControllerApi;
 use App\Http\Controllers\RegisterControllerApi;
 use App\Http\Controllers\UserController;
 
+
+
 // 🧑‍💻 Auth & User
 Route::post('/register', [RegisterControllerApi::class, 'register']);
 Route::post('/login', [LoginControllerApi::class, 'login']);
@@ -36,7 +38,10 @@ Route::get('/get-user', function () {
 });
 
 
-// 🤖 Chatbot Intents
+Route::middleware(['auth:api'])->group(function () {
+
+
+// 🤖 Chatbot Intents\
 Route::get('/chatbot/intents', [ChatbotIntentApiController::class, 'getIntents']);
 Route::post('/chatbot/intents', [ChatbotIntentApiController::class, 'storeIntent']);
 Route::put('/chatbot/intents/{id}', [ChatbotIntentApiController::class, 'updateIntent']);
@@ -44,6 +49,7 @@ Route::delete('/chatbot/intents/{id}', [ChatbotIntentApiController::class, 'dele
 
 
 // ❓ Chatbot Questions
+Route::get('/chatbot/questions', [ChatbotQuestionApiController::class, 'index']);
 Route::get('/chatbot/questions/{intent_id}', [ChatbotQuestionApiController::class, 'getQuestions']);
 Route::post('/chatbot/questions', [ChatbotQuestionApiController::class, 'createQuestions']);
 Route::put('/chatbot/questions/{id}', [ChatbotQuestionApiController::class, 'updateQuestions']);
@@ -53,7 +59,12 @@ Route::post('/chatbot/questions/{id}/order', [ChatbotQuestionApiController::clas
 
 
 // 💬 Chatbot Responses (✅ sudah dibetulkan controllernya)
+Route::get('/chatbot/responses', [ChatbotResponseApiController::class, 'index']);
 Route::get('/chatbot/responses/{intent_id}', [ChatbotResponseApiController::class, 'getResponse']);
 Route::post('/chatbot/responses', [ChatbotResponseApiController::class, 'createResponse']);
 Route::put('/chatbot/responses/{id}', [ChatbotResponseApiController::class, 'updateResponse']);
 Route::delete('/chatbot/responses/{id}', [ChatbotResponseApiController::class, 'deleteResponse']);
+
+});
+
+
