@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\RegisterRequest;
 //use Illuminate\Support\Facades\Validator;
 use App\Http\Responses\RegisterResponse;
+use Spatie\Permission\Models\Role;
 
 class RegisterControllerApi extends Controller
 {
@@ -29,6 +30,12 @@ class RegisterControllerApi extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        return RegisterResponse::success('Register Succes', $user);
+        // Assign default role to the user
+        if ($request->has('roles')) {
+            $user->syncRoles($request->roles); // roles dalam bentuk array ['admin', 'user'] atau string
+        }
+
+
+         return RegisterResponse::success('Register Success', $user->load('roles'));
     }
 }

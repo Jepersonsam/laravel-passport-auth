@@ -1,41 +1,45 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Http\Request;
-
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\RegisterControllerApi;
+use App\Http\Controllers\LoginControllerApi;
 use App\Http\Controllers\ChatbotIntentApiController;
 use App\Http\Controllers\ChatbotQuestionApiController;
 use App\Http\Controllers\ChatbotResponseApiController;
-use App\Http\Controllers\LoginControllerApi;
-use App\Http\Controllers\RegisterControllerApi;
-use App\Http\Controllers\UserController;
-
-
+use App\Http\Controllers\RoleController;
+use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\Http;
 
 // 🧑‍💻 Auth & User
 Route::post('/register', [RegisterControllerApi::class, 'register']);
 Route::post('/login', [LoginControllerApi::class, 'login']);
-Route::get('/user', [UserController::class, 'getUser'])->middleware('auth:api');
+// Route::get('/user', [UserController::class, 'getUser'])->middleware('auth:api');
+Route::apiResource('users', UserController::class);
+Route::apiResource('permissions', PermissionController::class);
+Route::get('/roles/names', [RoleController::class, 'getNames']);
+Route::apiResource('roles', RoleController::class);
+
 
 // 🔁 Fetch dari webhook n8n
-Route::get('/get-user', function () {
-    $webhookUrl = 'http://localhost:32769/webhook-test/1ec6c84f-c751-419e-b5f5-544bb356840f';
+// Route::get('/get-user', function () {
+//     $webhookUrl = 'http://localhost:32769/webhook-test/1ec6c84f-c751-419e-b5f5-544bb356840f';
 
-    $response = Http::get($webhookUrl);
+//     $response = Http::get($webhookUrl);
 
-    if ($response->successful()) {
-        return response()->json([
-            'message' => 'Data fetched successfully from n8n webhook!',
-            'data' => $response->json(),
-        ], 200);
-    }
+//     if ($response->successful()) {
+//         return response()->json([
+//             'message' => 'Data fetched successfully from n8n webhook!',
+//             'data' => $response->json(),
+//         ], 200);
+//     }
 
-    return response()->json([
-        'error' => 'Failed to fetch data from webhook.',
-        'details' => $response->body(),
-    ], 500);
-});
+//     return response()->json([
+//         'error' => 'Failed to fetch data from webhook.',
+//         'details' => $response->body(),
+//     ], 500);
+// });
 
 
 Route::middleware(['auth:api'])->group(function () {
@@ -66,5 +70,7 @@ Route::put('/chatbot/responses/{id}', [ChatbotResponseApiController::class, 'upd
 Route::delete('/chatbot/responses/{id}', [ChatbotResponseApiController::class, 'deleteResponse']);
 
 });
+
+
 
 

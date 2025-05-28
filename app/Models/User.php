@@ -40,22 +40,9 @@ class User extends Authenticatable
      *
      * @return array<string, string>
      */
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
-    }
-
-    /**
-     * Get all permissions for the user.
-     *
-     * @return array
-     */
-    public function getUserPermissions()
-    {
-        return $this->getAllPermissions()->mapWithKeys(fn($permission) => [$permission['name'] => true]);
-    }
+    // Ubah method casts jadi properti protected $casts
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+    ];
 }
-
