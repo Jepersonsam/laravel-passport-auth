@@ -9,17 +9,37 @@ use App\Http\Controllers\ChatbotIntentApiController;
 use App\Http\Controllers\ChatbotQuestionApiController;
 use App\Http\Controllers\ChatbotResponseApiController;
 use App\Http\Controllers\RoleController;
+use App\Models\User;
+use Illuminate\Routing\RouteRegistrar;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Http;
 
 // 🧑‍💻 Auth & User
 Route::post('/register', [RegisterControllerApi::class, 'register']);
 Route::post('/login', [LoginControllerApi::class, 'login']);
+
+
 // Route::get('/user', [UserController::class, 'getUser'])->middleware('auth:api');
+Route::middleware(['auth:api', 'permission:manage users'])->group(function () {
+    Route::get('/users', [UserController::class, 'index']);
+});
+
+
+Route::middleware(['auth:api', 'permission:manage users'])->group(function () {
 Route::apiResource('users', UserController::class);
+});
+
+Route::middleware(['auth:api', 'permission:manage permissions'])->group(function () {
 Route::apiResource('permissions', PermissionController::class);
-Route::get('/roles/names', [RoleController::class, 'getNames']);
+});
+
+
+
+// Route::get('/roles/names', [RoleController::class, 'getNames']);
+Route::middleware(['auth:api', 'permission:manage roles'])->group(function () {
 Route::apiResource('roles', RoleController::class);
+});
+
 
 
 // 🔁 Fetch dari webhook n8n
@@ -42,7 +62,7 @@ Route::apiResource('roles', RoleController::class);
 // });
 
 
-Route::middleware(['auth:api'])->group(function () {
+Route::middleware(['auth:api', 'permission:manage chatbot'])->group(function () {
 
 
 // 🤖 Chatbot Intents\
@@ -50,6 +70,7 @@ Route::get('/chatbot/intents', [ChatbotIntentApiController::class, 'getIntents']
 Route::post('/chatbot/intents', [ChatbotIntentApiController::class, 'storeIntent']);
 Route::put('/chatbot/intents/{id}', [ChatbotIntentApiController::class, 'updateIntent']);
 Route::delete('/chatbot/intents/{id}', [ChatbotIntentApiController::class, 'deleteIntent']);
+
 
 
 // ❓ Chatbot Questions
@@ -69,8 +90,8 @@ Route::post('/chatbot/responses', [ChatbotResponseApiController::class, 'createR
 Route::put('/chatbot/responses/{id}', [ChatbotResponseApiController::class, 'updateResponse']);
 Route::delete('/chatbot/responses/{id}', [ChatbotResponseApiController::class, 'deleteResponse']);
 
-});
 
+});
 
 
 

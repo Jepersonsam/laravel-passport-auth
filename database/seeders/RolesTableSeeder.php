@@ -14,6 +14,7 @@ class RolesTableSeeder extends Seeder
         $superAdmin = Role::firstOrCreate(['name' => 'super-admin']);
         $superAdmin->syncPermissions(Permission::all());
 
+
         // Admin
         $admin = Role::firstOrCreate(['name' => 'admin']);
         $admin->syncPermissions([
