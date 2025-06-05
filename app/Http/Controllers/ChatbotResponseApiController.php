@@ -24,10 +24,9 @@ class ChatbotResponseApiController extends Controller
             'data' => ChatbotResponseResource::collection($response),
         ]);
     }
-     public function index()
+    public function index()
     {
         return ChatbotResponse::with('intent')->paginate(50);
-        
     }
 
     /**
@@ -81,7 +80,7 @@ class ChatbotResponseApiController extends Controller
     }
 
 
-    
+
     /**
      * Get Route Responses
      */
@@ -123,5 +122,102 @@ class ChatbotResponseApiController extends Controller
             'text' => $finalText
         ]);
     }
-}
 
+
+    /**
+     * Get Schedule Responses
+     */
+    public function getScheduleResponse(Request $request): JsonResponse
+    {
+        $origin = $request->input('origin');
+        $destination = $request->input('destination');
+        $departureDate = $request->input('departure_date');
+
+        if (!$origin || !$destination || !$departureDate) {
+            return response()->json(['error' => 'Origin, destination, dan departure_date wajib diisi.'], 422);
+        }
+
+        // Ambil template response dari intent_id = 2
+        $response = DB::table('chatbot_responses')
+            ->where('intent_id', 2)
+            ->first();
+
+        if (!$response) {
+            return response()->json(['error' => 'Response tidak ditemukan.'], 404);
+        }
+
+        // Ambil jadwal dari tabel schedules
+        $schedules = DB::table('schedules')
+            ->select('time', 'vehicle')
+            ->where('origin', 'like', "%$origin%")
+            ->where('destination', 'like', "%$destination%")
+            ->where('departure_date', $departureDate)
+            ->get();
+
+        if ($schedules->isEmpty()) {
+            return response()->json(['text' => 'Tidak ditemukan jadwal keberangkatan untuk rute ini.']);
+        }
+
+        // Gabungkan jadwal menjadi satu string
+        $scheduleText = $schedules->map(function ($s) {
+            return $s->time . ' - ' . $s->vehicle;
+        })->implode(', ');
+
+        // Replace placeholder
+        $finalText = str_replace(
+            ['{origin}', '{destination}', '{departure_date}', '{schedule}'],
+            [$origin, $destination, $departureDate, $scheduleText],
+            $response->response_text
+        );
+
+        return response()->json([
+            'text' => $finalText
+        ]);
+    }
+
+    /**
+     * Get Ticket Responses
+     */
+    public function getTicketPriceResponse(Request $request): JsonResponse
+    {
+        $origin = $request->input('origin');
+        $destination = $request->input('destination');
+        $ticket_class = $request->input('ticket_class');
+
+        if (!$origin || !$destination || !$ticket_class) {
+            return response()->json(['error' => 'Origin, destination, dan ticket_class wajib diisi.'], 422);
+        }
+
+        // Ambil template response dari chatbot_responses untuk intent_id 3
+        $response = DB::table('chatbot_responses')
+            ->where('intent_id', 3)
+            ->first();
+
+        if (!$response) {
+            return response()->json(['error' => 'Response tidak ditemukan.'], 404);
+        }
+
+        // Ambil harga tiket dari tabel tickets
+        $ticket = DB::table('tickets')
+            ->where('origin_city', $origin)
+            ->where('destination_city', $destination)
+            ->where('class', $ticket_class)
+            ->orderBy('price', 'asc')
+            ->first();
+
+        if (!$ticket) {
+            return response()->json(['text' => 'Maaf, tiket untuk kelas tersebut tidak tersedia dari ' . $origin . ' ke ' . $destination . '.']);
+        }
+
+        // Ganti placeholder di response_text
+        $finalText = str_replace(
+            ['{ticket_class}', '{origin}', '{destination}', '{price}'],
+            [$ticket_class, $origin, $destination, number_format($ticket->price, 0, ',', '.')],
+            $response->response_text
+        );
+
+        return response()->json([
+            'text' => $finalText,
+        ]);
+    }
+}

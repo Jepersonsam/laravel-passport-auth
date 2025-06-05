@@ -23,7 +23,7 @@ Route::post('/login', [LoginControllerApi::class, 'login']);
 
 // User routes (tanpa apiResource)
 Route::middleware(['auth:api'])->group(function () {
-    
+
     // User routes
     Route::middleware('can:view-user')->group(function () {
         Route::get('/users', [UserController::class, 'index']);
@@ -55,24 +55,24 @@ Route::middleware(['auth:api'])->group(function () {
 
 
 
-// 🔁 Fetch dari webhook n8n
-// Route::get('/get-user', function () {
-//     $webhookUrl = 'http://localhost:32769/webhook-test/1ec6c84f-c751-419e-b5f5-544bb356840f';
+    // 🔁 Fetch dari webhook n8n
+    // Route::get('/get-user', function () {
+    //     $webhookUrl = 'http://localhost:32769/webhook-test/1ec6c84f-c751-419e-b5f5-544bb356840f';
 
-//     $response = Http::get($webhookUrl);
+    //     $response = Http::get($webhookUrl);
 
-//     if ($response->successful()) {
-//         return response()->json([
-//             'message' => 'Data fetched successfully from n8n webhook!',
-//             'data' => $response->json(),
-//         ], 200);
-//     }
+    //     if ($response->successful()) {
+    //         return response()->json([
+    //             'message' => 'Data fetched successfully from n8n webhook!',
+    //             'data' => $response->json(),
+    //         ], 200);
+    //     }
 
-//     return response()->json([
-//         'error' => 'Failed to fetch data from webhook.',
-//         'details' => $response->body(),
-//     ], 500);
-// });
+    //     return response()->json([
+    //         'error' => 'Failed to fetch data from webhook.',
+    //         'details' => $response->body(),
+    //     ], 500);
+    // });
 
 
 
@@ -99,12 +99,8 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('/chatbot/responses', [ChatbotResponseApiController::class, 'createResponse'])->middleware('can:create-response');
     Route::put('/chatbot/responses/{id}', [ChatbotResponseApiController::class, 'updateResponse'])->middleware('can:edit-response');
     Route::delete('/chatbot/responses/{id}', [ChatbotResponseApiController::class, 'deleteResponse'])->middleware('can:delete-response');
-
 });
 
 Route::post('/chatbot/route-response', [ChatbotResponseApiController::class, 'getRouteResponse']);
-
-
-
-
-
+Route::get('/chatbot/schedule', [ChatbotResponseApiController::class, 'getScheduleResponse']);
+Route::get('/ticket-price', [ChatbotResponseApiController::class, 'getTicketPriceResponse']);
