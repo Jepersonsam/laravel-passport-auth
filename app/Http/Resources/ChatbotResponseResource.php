@@ -7,17 +7,13 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class ChatbotResponseResource extends JsonResource
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @return array<string, mixed>
-     */
     public function toArray(Request $request): array
     {
-        return[
+        return [
             'id' => $this->id,
             'intent_id' => $this->intent_id,
             'response_text' => $this->response_text,
+            'type' => $this->type, // Tambahan
             'value' => $this->value,
             'params' => $this->params,
             'created_at' => $this->created_at,

@@ -6,6 +6,8 @@ use App\Models\ChatbotResponse;
 use App\Http\Requests\StoreResponseRequest;
 use App\Http\Requests\UpdateResponseRequest;
 use App\Http\Resources\ChatbotResponseResource;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
 class ChatbotResponseApiController extends Controller
@@ -77,4 +79,49 @@ class ChatbotResponseApiController extends Controller
             'message' => 'Response deleted successfully',
         ]);
     }
+
+
+    
+    /**
+     * Get Route Responses
+     */
+    public function getRouteResponse(Request $request)
+    {
+        $origin = $request->input('origin');
+        $destination = $request->input('destination');
+
+        if (!$origin || !$destination) {
+            return response()->json(['error' => 'Origin dan Destination wajib diisi.'], 422);
+        }
+
+        // Ambil query dari chatbot_responses untuk intent id = 1 (misal: rute)
+        $response = DB::table('chatbot_responses')
+            ->where('intent_id', 1)
+            ->first();
+
+        if (!$response) {
+            return response()->json(['error' => 'Response tidak ditemukan.'], 404);
+        }
+
+        // Query route
+        $route = DB::selectOne("
+            SELECT name FROM routes 
+            WHERE origin LIKE ? AND destination LIKE ?
+            LIMIT 1
+        ", ["%$origin%", "%$destination%"]);
+
+        $routeName = $route->name ?? 'tidak diketahui';
+
+        // Replace placeholder di response_text
+        $finalText = str_replace(
+            ['{origin}', '{destination}', '{name}'],
+            [$origin, $destination, $routeName],
+            $response->response_text
+        );
+
+        return response()->json([
+            'text' => $finalText
+        ]);
+    }
 }
+

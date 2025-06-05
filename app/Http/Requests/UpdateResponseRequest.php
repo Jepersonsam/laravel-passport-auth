@@ -16,6 +16,7 @@ class UpdateResponseRequest extends FormRequest
         return [
             'intent_id' => 'required|exists:chatbot_intents,id',
             'response_text' => 'required|string',
+            'type' => 'required|string',
             'value' => 'nullable|string',
             'params' => 'nullable|array',
         ];
@@ -23,10 +24,13 @@ class UpdateResponseRequest extends FormRequest
 
     protected function prepareForValidation()
     {
-        if ($this->has('params') && is_array($this->params)) {
-            $this->merge([
-                'params' => json_encode($this->params)
-            ]);
+        if ($this->has('params')) {
+            if (is_string($this->params)) {
+                $decoded = json_decode($this->params, true);
+                $this->merge([
+                    'params' => json_last_error() === JSON_ERROR_NONE ? $decoded : [],
+                ]);
+            }
         }
     }
 }

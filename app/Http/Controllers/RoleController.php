@@ -70,9 +70,9 @@ class RoleController extends Controller
         return response()->json(['message' => 'Role deleted']);
     }
 
-    public function getNames()
+    public function onlyNames()
     {
-        $roles = Role::select('name')->get();
+        $roles = Role::pluck('name');
         return response()->json($roles);
     }
 }

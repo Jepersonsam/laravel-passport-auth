@@ -44,6 +44,7 @@ class UserController extends Controller
             'name'     => $request->name,
             'email'    => $request->email,
             'password' => Hash::make($request->password),
+            'password_confirmation' => '',
             'roles'     => 'sometimes|array',
             'roles.*'   => 'exists:roles,name',
         ]);

@@ -2,6 +2,11 @@
 
 return [
 
+
+    'default' => [
+        'guard' => 'api',
+    ],
+
     'models' => [
 
         /*

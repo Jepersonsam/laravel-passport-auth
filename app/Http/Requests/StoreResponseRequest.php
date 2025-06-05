@@ -22,29 +22,29 @@ class StoreResponseRequest extends FormRequest
         ];
     }
 
-    // protected function prepareForValidation()
-    // {
-    //     if ($this->has('params')) {
-    //         // Jika params adalah string, coba decode menjadi array
-    //         if (is_string($this->params)) {
-    //             $decodedParams = json_decode($this->params, true);
-    //             if (json_last_error() === JSON_ERROR_NONE && is_array($decodedParams)) {
-    //                 $this->merge([
-    //                     'params' => $decodedParams
-    //                 ]);
-    //             } else {
-    //                 // Jika string bukan JSON array yang valid, ubah menjadi array kosong atau berikan default
-    //                 $this->merge([
-    //                     'params' => []
-    //                 ]);
-    //             }
-    //         }
-    //         // Jika params sudah array, encode ke JSON
-    //         if (is_array($this->params)) {
-    //             $this->merge([
-    //                 'params' => json_encode($this->params)
-    //             ]);
-    //         }
-    //     }
-    // }
+    protected function prepareForValidation()
+    {
+        if ($this->has('params')) {
+            // Jika params adalah string, coba decode menjadi array
+            if (is_string($this->params)) {
+                $decodedParams = json_decode($this->params, true);
+                if (json_last_error() === JSON_ERROR_NONE && is_array($decodedParams)) {
+                    $this->merge([
+                        'params' => $decodedParams
+                    ]);
+                } else {
+                    // Jika string bukan JSON array yang valid, ubah menjadi array kosong atau berikan default
+                    $this->merge([
+                        'params' => []
+                    ]);
+                }
+            }
+            // Jika params sudah array, encode ke JSON
+            if (is_array($this->params)) {
+                $this->merge([
+                    'params' => json_encode($this->params)
+                ]);
+            }
+        }
+    }
 }
