@@ -101,6 +101,6 @@ Route::middleware(['auth:api'])->group(function () {
     Route::delete('/chatbot/responses/{id}', [ChatbotResponseApiController::class, 'deleteResponse'])->middleware('can:delete-response');
 });
 
-Route::post('/chatbot/route-response', [ChatbotResponseApiController::class, 'getRouteResponse']);
+Route::get('/chatbot/route-response', [ChatbotResponseApiController::class, 'getRouteResponse']);
 Route::get('/chatbot/schedule', [ChatbotResponseApiController::class, 'getScheduleResponse']);
 Route::get('/ticket-price', [ChatbotResponseApiController::class, 'getTicketPriceResponse']);
